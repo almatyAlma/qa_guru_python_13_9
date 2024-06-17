@@ -1,43 +1,36 @@
-from selene import browser, have
-import os
-from os.path import dirname, abspath
-
-path = os.path.join(dirname(dirname(abspath(__file__))), "resources")
+from pages.registration_page import RegistrationPage
 
 
-def test_demoqa_form():
+def test_registration_form():
+    registration_page = RegistrationPage()
 
-    browser.open('https://demoqa.com/automation-practice-form')
-    browser.driver.execute_script("document.querySelector('.body-height').style.transform='scale(.50)'")
+    registration_page.open()
 
-    browser.element('#firstName').type('firstName')
-    browser.element('#lastName').type('lastName')
-    browser.element('#userEmail').type('test@gmail.com')
-    browser.element('[for="gender-radio-2"]').click()
-    browser.element('#userNumber').type('7777777777')
+    (
+        registration_page.fill_first_name("Test")
+        .fill_second_name("Testov")
+        .fill_email("test@test.com")
+        .select_gender("test")
+        .fill_phone_number("1234567890")
+        .fill_date_of_birth("July", "1988", "02")
+        .fill_subjects("Computer Science")
+        .fill_hobbies("Sing")
+        .upload_picture("orig.jpg")
+        .fill_current_address("test test")
+        .fill_state("test")
+        .fill_city("test")
+        .submit_form()
+    )
 
-    browser.element('#dateOfBirthInput').click()
-    browser.element('.react-datepicker__year-select').element('[value="1991"]').click()
-    browser.element('.react-datepicker__month-select').element('[value="2"]').click()
-    browser.element('.react-datepicker__day--003').click()
-
-    browser.element('#subjectsInput').type('Computer Science').press_enter()
-    browser.element('[for="hobbies-checkbox-2"]').click()
-    browser.element('[type=file]').send_keys(path + '/orig.jpg')
-    browser.element('#currentAddress').type('Current Address')
-    browser.element('#react-select-3-input').type('raj').press_enter()
-    browser.element('#react-select-4-input').type('jai').press_enter()
-    browser.element('#submit').press_enter()
-
-    browser.element('#example-modal-sizes-title-lg').should(have.text('Thanks for submitting the form'))
-    browser.element('.table-responsive').all('tr>td').even.should(have.exact_texts(
-        'firstName lastName',
-        'test@gmail.com',
-        'Female',
-        '7777777777',
-        '03 March,1991',
-        'Computer Science',
-        'Reading',
-        'orig.jpg',
-        'Current Address',
-        'Rajasthan Jaipur'))
+    registration_page.should_registered_user_info_with(
+        "Test Testov",
+        "test@test.com",
+        "test",
+        "1234567890",
+        "02 July,1988",
+        "test test",
+        "Sing",
+        "orig.jpg",
+        "test test",
+        "test test",
+    )
